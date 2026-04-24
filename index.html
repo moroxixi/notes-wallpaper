@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Quote Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,600&family=Inter:wght@300&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #181825;    /* Catppuccin Mocha Base */
+            --text-color: #cdd6f4;  /* Text */
+            --accent-color: #f5e0dc; /* Rosewater */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Inter', sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            transition: background 1s ease;
+        }
+
+        #container {
+            max-width: 80%;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        #quote {
+            font-family: 'Caveat', handwriting; 
+            font-size: 3.5rem;
+            line-height: 1.2;
+            font-style: italic;
+            margin-bottom: 20px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 1.5s ease-out;
+            color: var(--accent-color);
+        }
+
+        #quote.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .line {
+            height: 1px;
+            width: 50px;
+            background-color: var(--text-color);
+            margin: 20px auto;
+            opacity: 0.3;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="container">
+        <div id="quote">Loading your wisdom...</div>
+        <div class="line"></div>
+    </div>
+
+    <script>
+        // GANTI DENGAN URL APPS SCRIPT KAMU
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyz9JPUyRu6B5tm8UtaEfG1IVxkzuGfo9-MIJvYM0wuBnIQhwu67d6lCZUvPeQUGqkw/exec";
+
+        async function fetchQuote() {
+            const quoteElement = document.getElementById('quote');
+            
+            try {
+                // Fade out sebelum ganti teks
+                quoteElement.classList.remove('show');
+                
+                const response = await fetch(APPS_SCRIPT_URL);
+                const quotes = await response.json();
+                
+                if (quotes && quotes.length > 0) {
+                    const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+                    
+                    // Tunggu transisi fade out selesai
+                    setTimeout(() => {
+                        quoteElement.innerText = randomQuote;
+                        quoteElement.classList.add('show');
+                    }, 1000);
+                }
+            } catch (error) {
+                console.error("Gagal mengambil data:", error);
+                quoteElement.innerText = "Focus on your journey.";
+                quoteElement.classList.add('show');
+            }
+        }
+
+        // Ambil pertama kali saat load
+        fetchQuote();
+
+        // Update setiap 10 menit (600.000 ms)
+        setInterval(fetchQuote, 600000);
+    </script>
+</body>
+</html>
